@@ -18,7 +18,7 @@ cap = cv2.VideoCapture(1) # 0 for internal camera, 1 for external camera
 bad_posture_start_time = None
 last_alert_time = None
 ALERT_THRESHOLD = 10  # 10 seconds
-SOUND_FILE = "soft-alert.mp3"  # Replace with path to your sound file
+SOUND_FILE = "bad_posture/soft-alert.mp3"  # Replace with path to your sound file
 
 def calculate_neck_angle(landmarks):
     # Get coordinates for shoulder and ear

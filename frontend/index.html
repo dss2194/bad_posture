@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posture Detection</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Posture Detection</h1>
+        <div class="video-container">
+            <video id="video" autoplay></video>
+            <canvas id="canvas"></canvas>
+            <canvas id="pose-canvas"></canvas>
+        </div>
+        <div class="status-container">
+            <div id="status" class="status-message">Status: Waiting...</div>
+            <p id="angle">Neck Angle: --</p>
+            <p id="timer" class="hidden">Bad Posture Time: 0s</p>
+        </div>
+        <button id="startBtn">Start Detection</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 
