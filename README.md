@@ -64,23 +64,6 @@ python -m http.server 3000
 
 4. Click the "Start Detection" button and allow webcam access when prompted.
 
-## Project Structure
-
-The project has the following structure:
-
-bad_posture/
-├── backend/
-│ ├── main.py # FastAPI backend server
-│ └── requirements.txt # Python dependencies
-├── frontend/
-│ ├── index.html # Main HTML file
-│ ├── styles.css # Styles
-│ ├── app.js # Frontend JavaScript
-│ └── sounds/
-│ └── soft-alert.mp3 # Alert sound
-└── README.md
-
-
 5. Position yourself in front of the webcam
 6. The program will:
    - Show your posture status (Good/Bad)
@@ -89,6 +72,24 @@ bad_posture/
    - Play an alert sound after 2 minutes of bad posture
 
 7. Press 'q' to quit the program
+
+## Project Structure
+
+The project has the following structure:
+
+```
+bad_posture/
+├── backend/
+│   ├── main.py            # FastAPI backend server
+│   └── requirements.txt   # Python dependencies
+├── frontend/
+│   ├── index.html        # Main HTML file
+│   ├── styles.css        # Styles
+│   ├── app.js            # Frontend JavaScript
+│   └── sounds/
+│       └── soft-alert.mp3 # Alert sound
+└── README.md
+```
 
 ## Posture Guidelines
 
