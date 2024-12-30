@@ -1,4 +1,3 @@
-let ws;
 let badPostureStartTime = null;
 let lastAlertTime = null;
 const ALERT_THRESHOLD = 10000; // 10 seconds in milliseconds
@@ -9,18 +8,30 @@ async function startWebcam() {
     video.srcObject = stream;
 }
 
-function startWebSocket() {
-    // Replace with your deployed backend URL
-    ws = new WebSocket('wss://bad-posture-1.onrender.com/ws'); //for local testing : ws://localhost:8000/ws
+async function sendFrame() {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
     
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const frame = canvas.toDataURL('image/jpeg');
+    const blob = await (await fetch(frame)).blob();
+    const formData = new FormData();
+    formData.append('file', blob, 'frame.jpg');
+    
+    try {
+        const response = await fetch('/process-image/', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
         updateUI(data);
-    };
-    
-    ws.onclose = function() {
-        console.log('WebSocket connection closed');
-    };
+    } catch (error) {
+        console.error('Error sending frame:', error);
+    }
 }
 
 function updateUI(data) {
@@ -67,23 +78,8 @@ function updateUI(data) {
 }
 
 function playAlert() {
-    const audio = new Audio('sounds/soft-alert.mp3');
+    const audio = new Audio('/static/sounds/soft-alert.mp3');
     audio.play().catch(e => console.log('Error playing sound:', e));
-}
-
-function sendFrame() {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        const frame = canvas.toDataURL('image/jpeg');
-        ws.send(frame);
-    }
 }
 
 function drawPoseMarkers(landmarks) {
@@ -153,6 +149,5 @@ function drawConnections(ctx, landmarks, width, height) {
 
 document.getElementById('startBtn').addEventListener('click', async () => {
     await startWebcam();
-    startWebSocket();
-    setInterval(sendFrame, 100); // Send frame every 100ms
+    setInterval(sendFrame, 1000); // Send frame every 1000ms (1 second)
 }); 

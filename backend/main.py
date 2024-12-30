@@ -1,22 +1,31 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, File, UploadFile
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import cv2
 import numpy as np
 import mediapipe as mp
-import base64
 from math import degrees, atan2
-from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from io import BytesIO
+from PIL import Image
 
 app = FastAPI()
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    #allow_origins=["https://your-netlify-app.netlify.app"],  # Replace with your Netlify URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Get the absolute path to the frontend directory
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+
+# Mount the static files directory
+app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
@@ -39,59 +48,44 @@ def check_posture(angle):
     else:
         return {"status": "Bad Posture! Please sit straight", "is_good": False}
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
+@app.post("/process-image/")
+async def process_image(file: UploadFile = File(...)):
+    contents = await file.read()
+    image = Image.open(BytesIO(contents))
+    img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
     
-    try:
-        while True:
-            # Receive base64 encoded image from client
-            data = await websocket.receive_text()
-            
-            # Decode base64 image
-            encoded_data = data.split(',')[1]
-            nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)
-            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            
-            # Convert image to RGB
-            imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            
-            # Process the image and detect pose
-            results = pose.process(imgRGB)
-            
-            if results.pose_landmarks:
-                # Calculate neck angle
-                angle = calculate_neck_angle(results.pose_landmarks.landmark)
-                
-                # Check posture
-                posture_result = check_posture(angle)
-                
-                # Convert landmarks to list for JSON serialization
-                landmarks = []
-                for landmark in results.pose_landmarks.landmark:
-                    landmarks.append({
-                        'x': landmark.x,
-                        'y': landmark.y,
-                        'z': landmark.z,
-                        'visibility': landmark.visibility
-                    })
-                
-                # Send results back to client
-                await websocket.send_json({
-                    "angle": angle,
-                    "status": posture_result["status"],
-                    "is_good": posture_result["is_good"],
-                    "landmarks": landmarks
-                })
-            else:
-                await websocket.send_json({
-                    "error": "No pose detected"
-                })
-                
-    except Exception as e:
-        print(f"Error: {e}")
-        await websocket.close()
+    # Convert image to RGB
+    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    
+    # Process the image and detect pose
+    results = pose.process(imgRGB)
+    
+    if results.pose_landmarks:
+        # Calculate neck angle
+        angle = calculate_neck_angle(results.pose_landmarks.landmark)
+        
+        # Check posture
+        posture_result = check_posture(angle)
+        
+        # Convert landmarks to list for JSON serialization
+        landmarks = []
+        for landmark in results.pose_landmarks.landmark:
+            landmarks.append({
+                'x': landmark.x,
+                'y': landmark.y,
+                'z': landmark.z,
+                'visibility': landmark.visibility
+            })
+        
+        return {
+            "angle": angle,
+            "status": posture_result["status"],
+            "is_good": posture_result["is_good"],
+            "landmarks": landmarks
+        }
+    else:
+        return {"error": "No pose detected"}
 
 @app.get("/")
 async def root():
-    return {"message": "Posture Detection API is running"} 
+    return FileResponse(os.path.join(frontend_dir, "index.html")) 

@@ -116,4 +116,30 @@ bad_posture/
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## Running the Application
+
+1. Activate the virtual environment:
+
+Windows:
+```bash
+venv\Scripts\activate
+```
+macOS/Linux:
+```bash
+source venv/bin/activate
+```
+
+2. Start the application:
+```bash
+cd backend
+uvicorn main:app --reload
+```
+
+3. Open your web browser and navigate to:
+   http://localhost:8000
+
+4. Click the "Start Detection" button and allow webcam access when prompted.
+
+5. The application will periodically send images to the backend for processing and update the UI with the posture status.
+
 
