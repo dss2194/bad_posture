@@ -22,7 +22,12 @@ app.add_middleware(
 )
 
 # Get the absolute path to the frontend directory
-frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+# When running in Docker, the frontend will be in /app/frontend
+if os.path.exists("/app/frontend"):
+    frontend_dir = "/app/frontend"
+else:
+    # For local development
+    frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 
 # Create a sub-application for API routes
 api_app = FastAPI()
@@ -88,6 +93,10 @@ def check_posture(angle):
 
 # Mount the API routes under /api
 app.mount("/api", api_app)
+
+# Verify frontend directory exists
+if not os.path.exists(frontend_dir):
+    raise RuntimeError(f"Frontend directory not found at: {frontend_dir}")
 
 # Serve static files
 app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend") 
