@@ -11,7 +11,7 @@ async function startWebcam() {
 
 function startWebSocket() {
     // Replace with your deployed backend URL
-    ws = new WebSocket('wss://bad-posture-1.onrender.com/ws');
+    ws = new WebSocket('wss://bad-posture-1.onrender.com/ws'); //for local testing : ws://localhost:8000/ws
     
     ws.onmessage = function(event) {
         const data = JSON.parse(event.data);

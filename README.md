@@ -21,37 +21,74 @@ A real-time posture detection system using computer vision to help maintain good
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/your-username/posture-detection-system.git
+git clone https://github.com/JordiNeil/bad_posture.git
 ```
 
-2. Install the required packages:
+2. Create and activate a virtual environment:
+
+Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+macOS/Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+3. Install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Run the script:
-
+### Make sure you're in the backend directory and virtual environment is activated
 ```bash
-python bad_posture.py
+cd backend
+uvicorn main:app --reload
+```
+In a new terminal, navigate to the frontend directory
+```bash
+cd frontend
 ```
 
-2. Position yourself in front of the webcam
-3. The program will:
+4. Run the frontend:
+```bash
+python -m http.server 3000
+```
+
+3. Open your web browser and navigate to:
+   - Frontend: http://localhost:3000
+   - Backend API docs: http://localhost:8000/docs
+
+4. Click the "Start Detection" button and allow webcam access when prompted.
+
+## Project Structure
+
+The project has the following structure:
+
+bad_posture/
+├── backend/
+│ ├── main.py # FastAPI backend server
+│ └── requirements.txt # Python dependencies
+├── frontend/
+│ ├── index.html # Main HTML file
+│ ├── styles.css # Styles
+│ ├── app.js # Frontend JavaScript
+│ └── sounds/
+│ └── soft-alert.mp3 # Alert sound
+└── README.md
+
+
+5. Position yourself in front of the webcam
+6. The program will:
    - Show your posture status (Good/Bad)
    - Display your current neck angle
    - Show a timer when in bad posture
    - Play an alert sound after 2 minutes of bad posture
 
-4. Press 'q' to quit the program
-
-## Configuration
-
-You can modify these variables in `bad_posture.py`:
-
-- `ALERT_THRESHOLD`: Time in seconds before alert (default: 120)
-- `SOUND_FILE`: Path to alert sound file
-- `cap = cv2.VideoCapture(1)`: Change to 0 for internal webcam
+7. Press 'q' to quit the program
 
 ## Posture Guidelines
 
