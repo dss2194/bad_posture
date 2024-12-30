@@ -24,31 +24,10 @@ app.add_middleware(
 # Get the absolute path to the frontend directory
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 
-# Mount the static files directory
-app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+# Create a sub-application for API routes
+api_app = FastAPI()
 
-# Initialize MediaPipe Pose
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
-mp_draw = mp.solutions.drawing_utils
-
-def calculate_neck_angle(landmarks):
-    shoulder = (landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-               landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y)
-    ear = (landmarks[mp_pose.PoseLandmark.RIGHT_EAR.value].x,
-           landmarks[mp_pose.PoseLandmark.RIGHT_EAR.value].y)
-    
-    angle = degrees(atan2(ear[1] - shoulder[1], ear[0] - shoulder[0]))
-    return angle
-
-def check_posture(angle):
-    angle *= -1
-    if 65 <= angle <= 100:
-        return {"status": "Good Posture", "is_good": True}
-    else:
-        return {"status": "Bad Posture! Please sit straight", "is_good": False}
-
-@app.post("/process-image/")
+@api_app.post("/process-image")
 async def process_image(file: UploadFile = File(...)):
     contents = await file.read()
     image = Image.open(BytesIO(contents))
@@ -86,6 +65,29 @@ async def process_image(file: UploadFile = File(...)):
     else:
         return {"error": "No pose detected"}
 
-@app.get("/")
-async def root():
-    return FileResponse(os.path.join(frontend_dir, "index.html")) 
+# Initialize MediaPipe Pose
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose()
+mp_draw = mp.solutions.drawing_utils
+
+def calculate_neck_angle(landmarks):
+    shoulder = (landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+               landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y)
+    ear = (landmarks[mp_pose.PoseLandmark.RIGHT_EAR.value].x,
+           landmarks[mp_pose.PoseLandmark.RIGHT_EAR.value].y)
+    
+    angle = degrees(atan2(ear[1] - shoulder[1], ear[0] - shoulder[0]))
+    return angle
+
+def check_posture(angle):
+    angle *= -1
+    if 65 <= angle <= 100:
+        return {"status": "Good Posture", "is_good": True}
+    else:
+        return {"status": "Bad Posture! Please sit straight", "is_good": False}
+
+# Mount the API routes under /api
+app.mount("/api", api_app)
+
+# Serve static files
+app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend") 

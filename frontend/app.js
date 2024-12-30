@@ -23,7 +23,7 @@ async function sendFrame() {
     formData.append('file', blob, 'frame.jpg');
     
     try {
-        const response = await fetch('/process-image/', {
+        const response = await fetch('/api/process-image', {
             method: 'POST',
             body: formData
         });
@@ -78,7 +78,7 @@ function updateUI(data) {
 }
 
 function playAlert() {
-    const audio = new Audio('/static/sounds/soft-alert.mp3');
+    const audio = new Audio('sounds/soft-alert.mp3');
     audio.play().catch(e => console.log('Error playing sound:', e));
 }
 
