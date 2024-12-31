@@ -20,10 +20,3 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-
-# Media files
-frontend/assets/*
-!frontend/assets/.gitkeep
-
-# Keep directory structure but ignore contents
-!frontend/assets/
