@@ -86,7 +86,7 @@ def calculate_neck_angle(landmarks):
 
 def check_posture(angle):
     angle *= -1
-    if 65 <= angle <= 100:
+    if 60 <= angle <= 80:
         return {"status": "Good Posture", "is_good": True}
     else:
         return {"status": "Bad Posture! Please sit straight", "is_good": False}
