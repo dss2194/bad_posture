@@ -1,11 +1,20 @@
 let badPostureStartTime = null;
 let lastAlertTime = null;
 const ALERT_THRESHOLD = 10000; // 10 seconds in milliseconds
+const cameraOverlay = document.querySelector('.camera-overlay');
 
 async function startWebcam() {
     const video = document.getElementById('video');
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+            cameraOverlay.classList.add('hidden');
+        };
+    } catch (error) {
+        console.error('Error accessing webcam:', error);
+        cameraOverlay.textContent = 'Error accessing camera';
+    }
 }
 
 async function sendFrame() {
@@ -148,6 +157,12 @@ function drawConnections(ctx, landmarks, width, height) {
 }
 
 document.getElementById('startBtn').addEventListener('click', async () => {
+    const button = document.getElementById('startBtn');
+    button.disabled = true;
+    button.textContent = 'Starting...';
+    
     await startWebcam();
-    setInterval(sendFrame, 1000); // Send frame every 1000ms (1 second)
+    setInterval(sendFrame, 1000);
+    
+    button.textContent = 'Detection Running';
 }); 
