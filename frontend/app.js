@@ -1,8 +1,26 @@
-let config = {
-    minAngle: 63,
-    maxAngle: 80,
-    alertInterval: 10000 // 10 seconds in milliseconds
-};
+let config = loadConfig();
+
+function loadConfig() {
+    const storedConfig = localStorage.getItem('postureConfig');
+    if (storedConfig) {
+        try {
+            return JSON.parse(storedConfig);
+        } catch (e) {
+            console.error('Error loading stored config:', e);
+            return null;
+        }
+    }
+    return null;
+}
+
+function saveConfigToStorage() {
+    try {
+        localStorage.setItem('postureConfig', JSON.stringify(config));
+        console.log('Configuration saved to storage');
+    } catch (e) {
+        console.error('Error saving config to storage:', e);
+    }
+}
 
 let badPostureStartTime = null;
 let lastAlertTime = null;
@@ -64,7 +82,16 @@ function updateUI(data) {
     statusElement.textContent = data.status;
     statusElement.className = 'status-message ' + (data.is_good ? 'good-posture' : 'bad-posture');
     
-    angleElement.textContent = `Neck Angle: ${data.angle.toFixed(2)}`;
+    // Display both angles if available
+    let angleText = 'Neck Angles: ';
+    if (data.angles.right !== undefined) {
+        angleText += `Right: ${data.angles.right.toFixed(2)}°`;
+    }
+    if (data.angles.left !== undefined) {
+        if (data.angles.right !== undefined) angleText += ' | ';
+        angleText += `Left: ${data.angles.left.toFixed(2)}°`;
+    }
+    angleElement.textContent = angleText;
     
     // Draw pose markers if landmarks are available
     if (data.landmarks) {
@@ -162,44 +189,37 @@ function drawConnections(ctx, landmarks, width, height) {
     });
 }
 
-async function updateConfig() {
-    try {
-        const response = await fetch('/api/config', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                min_angle: config.minAngle,
-                max_angle: config.maxAngle
-            })
-        });
-        const data = await response.json();
-        if (data.message === "Configuration updated") {
-            console.log('Configuration updated successfully:', data.config);
-        } else {
-            console.error('Error updating configuration:', data);
-        }
-    } catch (error) {
-        console.error('Error updating configuration:', error);
-    }
-}
-
 document.getElementById('saveConfig').addEventListener('click', () => {
-    const minAngle = parseInt(document.getElementById('minAngle').value);
-    const maxAngle = parseInt(document.getElementById('maxAngle').value);
+    const rightMinAngle = parseInt(document.getElementById('rightMinAngle').value);
+    const rightMaxAngle = parseInt(document.getElementById('rightMaxAngle').value);
+    const leftMinAngle = parseInt(document.getElementById('leftMinAngle').value);
+    const leftMaxAngle = parseInt(document.getElementById('leftMaxAngle').value);
     const alertInterval = parseInt(document.getElementById('alertInterval').value) * 1000;
 
-    if (minAngle >= maxAngle) {
-        alert('Minimum angle must be less than maximum angle');
+    if (rightMinAngle >= rightMaxAngle || leftMinAngle >= leftMaxAngle) {
+        alert('Minimum angles must be less than maximum angles');
         return;
     }
 
-    config.minAngle = minAngle;
-    config.maxAngle = maxAngle;
+    if (rightMaxAngle > 0 || rightMinAngle > 0) {
+        alert('Right side angles must be negative');
+        return;
+    }
+
+    if (leftMaxAngle < 0 || leftMinAngle < 0) {
+        alert('Left side angles must be positive');
+        return;
+    }
+
+    config.rightMinAngle = rightMinAngle;
+    config.rightMaxAngle = rightMaxAngle;
+    config.leftMinAngle = leftMinAngle;
+    config.leftMaxAngle = leftMaxAngle;
     config.alertInterval = alertInterval;
     
-    updateConfig();
+    // Save to local storage
+    saveConfigToStorage();
+    
 });
 
 document.getElementById('startBtn').addEventListener('click', async () => {
@@ -211,4 +231,66 @@ document.getElementById('startBtn').addEventListener('click', async () => {
     setInterval(sendFrame, 1000);
     
     button.textContent = 'Detection Running';
+});
+
+async function getInitialConfig() {
+    try {
+        const response = await fetch('/api/config');
+        const defaultConfig = await response.json();
+        
+        // Load stored config if it exists
+        const storedConfig = loadConfig();
+        
+        // Use stored config or default from backend
+        config = storedConfig || {
+            rightMinAngle: defaultConfig.right_min_angle,
+            rightMaxAngle: defaultConfig.right_max_angle,
+            leftMinAngle: defaultConfig.left_min_angle,
+            leftMaxAngle: defaultConfig.left_max_angle,
+            alertInterval: 10000 // Keep alert interval as fixed value or add to backend
+        };
+        
+        // Update input fields with current config
+        document.getElementById('rightMinAngle').value = config.rightMinAngle;
+        document.getElementById('rightMaxAngle').value = config.rightMaxAngle;
+        document.getElementById('leftMinAngle').value = config.leftMinAngle;
+        document.getElementById('leftMaxAngle').value = config.leftMaxAngle;
+        document.getElementById('alertInterval').value = config.alertInterval / 1000;
+    } catch (error) {
+        console.error('Error fetching initial config:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', getInitialConfig);
+
+// Add a reset button to HTML
+document.getElementById('resetConfig').addEventListener('click', async () => {
+    try {
+        // Get default config from backend
+        const response = await fetch('/api/config');
+        const defaultConfig = await response.json();
+        
+        // Update config object with default values
+        config = {
+            rightMinAngle: defaultConfig.right_min_angle,
+            rightMaxAngle: defaultConfig.right_max_angle,
+            leftMinAngle: defaultConfig.left_min_angle,
+            leftMaxAngle: defaultConfig.left_max_angle,
+            alertInterval: 10000
+        };
+        
+        // Update UI
+        document.getElementById('rightMinAngle').value = config.rightMinAngle;
+        document.getElementById('rightMaxAngle').value = config.rightMaxAngle;
+        document.getElementById('leftMinAngle').value = config.leftMinAngle;
+        document.getElementById('leftMaxAngle').value = config.leftMaxAngle;
+        document.getElementById('alertInterval').value = config.alertInterval / 1000;
+        
+        // Clear stored config
+        localStorage.removeItem('postureConfig');
+        
+        console.log('Reset to default configuration');
+    } catch (error) {
+        console.error('Error resetting configuration:', error);
+    }
 }); 

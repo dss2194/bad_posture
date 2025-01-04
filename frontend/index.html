@@ -29,10 +29,20 @@
                         <h2>Settings</h2>
                         <div class="config-group">
                             <label>
-                                Neck Angle Range:
+                                Right Side Angle Range:
                                 <div class="angle-inputs">
-                                    <input type="number" id="minAngle" value="63" min="0" max="90"> -
-                                    <input type="number" id="maxAngle" value="80" min="0" max="90">
+                                    <input type="number" id="rightMinAngle" value="-100" max="0"> -
+                                    <input type="number" id="rightMaxAngle" value="-65" max="0">
+                                    degrees
+                                </div>
+                            </label>
+                        </div>
+                        <div class="config-group">
+                            <label>
+                                Left Side Angle Range:
+                                <div class="angle-inputs">
+                                    <input type="number" id="leftMinAngle" value="65" min="0"> -
+                                    <input type="number" id="leftMaxAngle" value="100" min="0">
                                     degrees
                                 </div>
                             </label>
@@ -46,7 +56,10 @@
                                 </div>
                             </label>
                         </div>
-                        <button id="saveConfig" class="config-button">Save Settings</button>
+                        <div class="button-group">
+                            <button id="saveConfig" class="config-button">Save Settings</button>
+                            <button id="resetConfig" class="config-button secondary">Reset to Default</button>
+                        </div>
                     </div>
 
                     <div class="status-container">

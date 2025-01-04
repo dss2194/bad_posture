@@ -359,4 +359,19 @@ footer a:hover {
     .layout-container {
         gap: 1rem;
     }
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.config-button.secondary {
+    background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
+    color: var(--text-color);
+}
+
+.config-button.secondary:hover {
+    background: linear-gradient(145deg, #e0e0e0, #f5f5f5);
 } 
