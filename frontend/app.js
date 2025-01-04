@@ -71,10 +71,12 @@ function updateUI(data) {
     const statusElement = document.getElementById('status');
     const angleElement = document.getElementById('angle');
     const timerElement = document.getElementById('timer');
+    const videoContainer = document.querySelector('.video-container');
     
     if (data.error) {
         statusElement.textContent = `Status: ${data.error}`;
         statusElement.className = 'status-message';
+        videoContainer.className = 'video-container';  // Reset shadow
         return;
     }
     
@@ -82,6 +84,10 @@ function updateUI(data) {
     statusElement.textContent = data.status;
     statusElement.className = 'status-message ' + (data.is_good ? 'good-posture' : 'bad-posture');
     
+    // Update video container shadow
+    videoContainer.className = 'video-container ' + 
+        (data.is_good ? 'good-posture-shadow' : 'bad-posture-shadow');
+
     // Display both angles if available
     let angleText = 'Neck Angles: ';
     if (data.angles.right !== undefined) {
