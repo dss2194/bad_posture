@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 from io import BytesIO
 from PIL import Image
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -31,6 +32,24 @@ else:
 
 # Create a sub-application for API routes
 api_app = FastAPI()
+
+# Add this class for request validation
+class ConfigUpdate(BaseModel):
+    min_angle: int
+    max_angle: int
+
+class PostureConfig:
+    def __init__(self):
+        self.min_angle = 63
+        self.max_angle = 80
+
+config = PostureConfig()
+
+@api_app.post("/config")
+async def update_config(config_update: ConfigUpdate):
+    config.min_angle = config_update.min_angle
+    config.max_angle = config_update.max_angle
+    return {"message": "Configuration updated", "config": {"min_angle": config.min_angle, "max_angle": config.max_angle}}
 
 @api_app.post("/process-image")
 async def process_image(file: UploadFile = File(...)):
@@ -86,7 +105,7 @@ def calculate_neck_angle(landmarks):
 
 def check_posture(angle):
     angle *= -1
-    if 63 <= angle <= 80:
+    if config.min_angle <= angle <= config.max_angle:
         return {"status": "Good Posture", "is_good": True}
     else:
         return {"status": "Bad Posture! Please sit straight", "is_good": False}

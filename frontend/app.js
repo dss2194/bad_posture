@@ -1,3 +1,9 @@
+let config = {
+    minAngle: 63,
+    maxAngle: 80,
+    alertInterval: 10000 // 10 seconds in milliseconds
+};
+
 let badPostureStartTime = null;
 let lastAlertTime = null;
 const ALERT_THRESHOLD = 10000; // 10 seconds in milliseconds
@@ -74,8 +80,8 @@ function updateUI(data) {
         timerElement.textContent = `Bad Posture Time: ${duration}s`;
         timerElement.classList.remove('hidden');
         
-        if (duration >= ALERT_THRESHOLD / 1000) {
-            if (!lastAlertTime || (Date.now() - lastAlertTime) >= ALERT_THRESHOLD) {
+        if (duration >= config.alertInterval / 1000) {
+            if (!lastAlertTime || (Date.now() - lastAlertTime) >= config.alertInterval) {
                 playAlert();
                 lastAlertTime = Date.now();
             }
@@ -155,6 +161,46 @@ function drawConnections(ctx, landmarks, width, height) {
         }
     });
 }
+
+async function updateConfig() {
+    try {
+        const response = await fetch('/api/config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                min_angle: config.minAngle,
+                max_angle: config.maxAngle
+            })
+        });
+        const data = await response.json();
+        if (data.message === "Configuration updated") {
+            console.log('Configuration updated successfully:', data.config);
+        } else {
+            console.error('Error updating configuration:', data);
+        }
+    } catch (error) {
+        console.error('Error updating configuration:', error);
+    }
+}
+
+document.getElementById('saveConfig').addEventListener('click', () => {
+    const minAngle = parseInt(document.getElementById('minAngle').value);
+    const maxAngle = parseInt(document.getElementById('maxAngle').value);
+    const alertInterval = parseInt(document.getElementById('alertInterval').value) * 1000;
+
+    if (minAngle >= maxAngle) {
+        alert('Minimum angle must be less than maximum angle');
+        return;
+    }
+
+    config.minAngle = minAngle;
+    config.maxAngle = maxAngle;
+    config.alertInterval = alertInterval;
+    
+    updateConfig();
+});
 
 document.getElementById('startBtn').addEventListener('click', async () => {
     const button = document.getElementById('startBtn');

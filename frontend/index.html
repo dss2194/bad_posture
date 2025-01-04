@@ -23,22 +23,50 @@
         </header>
 
         <main>
-            <div class="video-container">
-                <video id="video" autoplay></video>
-                <canvas id="canvas"></canvas>
-                <canvas id="pose-canvas"></canvas>
-                <div class="camera-overlay">
-                    <span>Camera not started</span>
+            <div class="layout-container">
+                <div class="controls-sidebar">
+                    <div class="config-container">
+                        <h2>Settings</h2>
+                        <div class="config-group">
+                            <label>
+                                Neck Angle Range:
+                                <div class="angle-inputs">
+                                    <input type="number" id="minAngle" value="63" min="0" max="90"> -
+                                    <input type="number" id="maxAngle" value="80" min="0" max="90">
+                                    degrees
+                                </div>
+                            </label>
+                        </div>
+                        <div class="config-group">
+                            <label>
+                                Alert Interval:
+                                <div class="time-input">
+                                    <input type="number" id="alertInterval" value="10" min="1">
+                                    seconds
+                                </div>
+                            </label>
+                        </div>
+                        <button id="saveConfig" class="config-button">Save Settings</button>
+                    </div>
+
+                    <div class="status-container">
+                        <div id="status" class="status-message">Status: Waiting...</div>
+                        <p id="angle" class="metric">Neck Angle: --</p>
+                        <p id="timer" class="metric hidden">Bad Posture Time: 0s</p>
+                    </div>
+
+                    <button id="startBtn" class="start-button">Start Detection</button>
+                </div>
+
+                <div class="video-container">
+                    <video id="video" autoplay></video>
+                    <canvas id="canvas"></canvas>
+                    <canvas id="pose-canvas"></canvas>
+                    <div class="camera-overlay">
+                        <span>Camera not started</span>
+                    </div>
                 </div>
             </div>
-
-            <div class="status-container">
-                <div id="status" class="status-message">Status: Waiting...</div>
-                <p id="angle" class="metric">Neck Angle: --</p>
-                <p id="timer" class="metric hidden">Bad Posture Time: 0s</p>
-            </div>
-
-            <button id="startBtn" class="start-button">Start Detection</button>
         </main>
 
         <footer>
