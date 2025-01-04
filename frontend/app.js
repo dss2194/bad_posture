@@ -26,6 +26,8 @@ let badPostureStartTime = null;
 let lastAlertTime = null;
 const ALERT_THRESHOLD = 10000; // 10 seconds in milliseconds
 const cameraOverlay = document.querySelector('.camera-overlay');
+let alertsEnabled = true;
+const toggleAlertBtn = document.getElementById('toggleAlert');
 
 async function startWebcam() {
     const video = document.getElementById('video');
@@ -126,6 +128,7 @@ function updateUI(data) {
 }
 
 function playAlert() {
+    if (!alertsEnabled) return;
     const audio = new Audio('sounds/soft-alert.mp3');
     audio.play().catch(e => console.log('Error playing sound:', e));
 }
@@ -299,4 +302,12 @@ document.getElementById('resetConfig').addEventListener('click', async () => {
     } catch (error) {
         console.error('Error resetting configuration:', error);
     }
+});
+
+toggleAlertBtn.addEventListener('click', () => {
+    alertsEnabled = !alertsEnabled;
+    toggleAlertBtn.classList.toggle('disabled');
+    toggleAlertBtn.innerHTML = alertsEnabled ? 
+        '<span class="alert-icon">🔔</span> Alerts Enabled' : 
+        '<span class="alert-icon">🔕</span> Alerts Disabled';
 }); 
