@@ -48,19 +48,9 @@ pip install -r requirements.txt
 cd backend
 uvicorn main:app --reload
 ```
-In a new terminal, navigate to the frontend directory
-```bash
-cd frontend
-```
-
-4. Run the frontend:
-```bash
-python -m http.server 3000
-```
 
 3. Open your web browser and navigate to:
-   - Frontend: http://localhost:3000
-   - Backend API docs: http://localhost:8000/docs
+   http://localhost:8000/docs
 
 4. Click the "Start Detection" button and allow webcam access when prompted.
 
@@ -71,7 +61,6 @@ python -m http.server 3000
    - Show a timer when in bad posture
    - Play an alert sound after 2 minutes of bad posture
 
-7. Press 'q' to quit the program
 
 ## Project Structure
 
