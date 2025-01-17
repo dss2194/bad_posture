@@ -26,12 +26,18 @@ git clone https://github.com/JordiNeil/bad_posture.git
 
 2. Create and activate a virtual environment:
 
-Windows:
+Move to the backend directory
+```bash
+cd backend
+```
+Then create and activate a virtual environment:
+
+### Windows:
 ```bash
 python -m venv venv
 venv\Scripts\activate
 ```
-macOS/Linux:
+### macOS/Linux:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
