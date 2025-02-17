@@ -52,7 +52,7 @@ pip install -r requirements.txt
 ### Make sure you're in the backend directory and virtual environment is activated
 ```bash
 cd backend
-uvicorn main:app --reload
+uvicorn main:app --reload --port 5555
 ```
 
 3. Open your web browser and navigate to:
