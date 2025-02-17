@@ -137,4 +137,24 @@ uvicorn main:app --reload
 
 5. The application will periodically send images to the backend for processing and update the UI with the posture status.
 
+## Run local window service
+
+install nssm
+
+```powershell
+choco install nssm
+```
+
+Installing a service
+
+```powershell
+nssm install <servicename>
+```
+
+Removing a service
+
+```powershell
+nssm remove <servicename>
+```
+
 
