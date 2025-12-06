@@ -1,0 +1,28 @@
+stages:
+  - lint
+  - test
+  - deploy
+  - notify
+
+include:
+  - project: infra_dss/gitlab-ci-extends/dss-ci-templates
+    ref: main
+    file: gitleaks.yaml
+  - project: infra_dss/gitlab-ci-extends/dss-ci-templates
+    ref: main
+    file: checkov.gitlab-ci.yml
+  - project: infra_dss/gitlab-ci-extends/dss-ci-templates
+    ref: main
+    file: notify-telegram.gitlab-ci.yml
+
+
+check_secrets:
+  stage: lint
+  extends: .check_secrets
+  allow_failure: true
+
+check_checkov:
+  stage: lint
+  extends: .check_checkov
+  allow_failure: true
+
