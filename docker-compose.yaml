@@ -10,3 +10,16 @@ services:
       options:
         max-size: "200k"
         max-file: "3"
+
+  caddy:
+    image: caddy:2.11.2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./web/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  caddy_data:
+  caddy_config:
