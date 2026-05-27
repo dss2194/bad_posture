@@ -30,5 +30,6 @@ check_checkov:
   allow_failure: true
 
 build_latest:
+  image: docker:latest
   stage: build
   extends: .build-and-push
