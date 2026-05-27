@@ -4,7 +4,8 @@ name: Mirror Repository
 on:
   push:
     branches:
-      - main
+      - main 
+      - dev
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
