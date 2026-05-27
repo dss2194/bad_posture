@@ -1,6 +1,7 @@
 services:
   app:
-    image: ghcr.io/dss2194/bad_posture:sha256-b84d92c68acd04e397bc84e5e8da02a4f2afd860e2b94d501900623c00d97152
+    build:
+      dockerfile: ./Dockerfile
     ports:
       - "8000:8000"
     restart: unless-stopped
@@ -22,3 +23,5 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+
+  
