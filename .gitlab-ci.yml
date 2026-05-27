@@ -18,9 +18,6 @@ include:
   - project: infra_dss/gitlab-ci-extends/dss-ci-templates
     ref: main
     file: build_latest_only.yaml
-  - project: infra_dss/gitlab-ci-extends/dss-ci-templates
-    ref: main
-    file: build_on_tag.yaml
 
 check_secrets:
   stage: lint
@@ -35,4 +32,3 @@ check_checkov:
 build_latest:
   stage: build
   extends: .build-and-push
-  
