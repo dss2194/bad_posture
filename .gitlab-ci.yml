@@ -17,7 +17,7 @@ include:
     file: notify-telegram.gitlab-ci.yml
   - project: infra_dss/gitlab-ci-extends/dss-ci-templates
     ref: main
-    file: build_latest_only.yaml
+    file: python-docker.gitlab-ci.yml
 
 check_secrets:
   stage: lint
@@ -28,8 +28,3 @@ check_checkov:
   stage: lint
   extends: .check_checkov
   allow_failure: true
-
-build_latest:
-  image: docker:latest
-  stage: build
-  extends: .build-and-push
