@@ -16,7 +16,7 @@ include:
     ref: main
     file: notify-telegram.gitlab-ci.yml
   - project: infra_dss/gitlab-ci-extends/dss-ci-templates
-    ref: main
+    ref: dev
     file: python-docker.gitlab-ci.yml
 
 check_secrets:
