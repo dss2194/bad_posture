@@ -31,3 +31,7 @@ check_checkov:
   extends: .check_checkov
   allow_failure: true
 
+build_latest:
+  stage: build
+  extends: .build-and-push
+  
