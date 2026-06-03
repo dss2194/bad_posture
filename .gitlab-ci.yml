@@ -36,3 +36,14 @@ build_latest:
   stage: build
   extends: .build-and-push
   
+deploy_to_dev:
+  variables: 
+    SERVER_IP: 5.101.51.23
+  before_script: 
+    - echo "$SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
+    - chmod 600 /root/.ssh/id_rsa
+    - ssh-keyscan "$SERVER" >> ~/.ssh/known_hosts 
+  script:
+    - mkdir -p /opt/apps
+    - scp docker-compose.yaml root@:/opt/apps 
+    - docker compose up -d
