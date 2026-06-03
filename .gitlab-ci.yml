@@ -29,10 +29,6 @@ check_checkov:
   extends: .check_checkov
   allow_failure: true
 
-build_latest:
-  stage: build
-  extends: .build-and-push
-  
 deploy_to_dev:
   variables: 
     SERVER_IP: 5.101.51.23
