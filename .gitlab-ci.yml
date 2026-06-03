@@ -5,6 +5,7 @@ stages:
   - deploy
   - notify
 
+
 include:
   - project: infra_dss/gitlab-ci-extends/dss-ci-templates
     ref: main
@@ -30,9 +31,11 @@ check_checkov:
   allow_failure: true
 
 deploy_to_dev:
+  stage: deploy
   variables: 
     SERVER_IP: 5.101.51.23
   before_script: 
+    - eval "$(ssh-agent -s)"
     - echo "$SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
     - chmod 600 /root/.ssh/id_rsa
     - ssh-keyscan "$SERVER" >> ~/.ssh/known_hosts 
