@@ -32,6 +32,7 @@ check_checkov:
 
 deploy_to_dev:
   stage: deploy
+  image: alpine 3.22.4
   variables: 
     SERVER_IP: 5.101.51.23
   before_script: 
