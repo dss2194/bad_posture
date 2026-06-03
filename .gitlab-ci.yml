@@ -42,7 +42,7 @@ deploy_to_dev:
     - chmod 600 /root/.ssh
     - echo "$SSH_PRIVATE_KEY" > /root/.ssh/id_rsa
     - chmod 600 /root/.ssh/id_rsa
-    - ssh-keyscan "$SERVER" >> ~/.ssh/known_hosts 
+    - ssh-keyscan "$SERVER_IP" >> ~/.ssh/known_hosts 
   script:
     - mkdir -p /opt/apps
     - scp docker-compose.yaml root@:/opt/apps 
