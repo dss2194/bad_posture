@@ -44,6 +44,6 @@ deploy_to_dev:
     - chmod 600 /root/.ssh/id_rsa
     - ssh-keyscan "$SERVER_IP" >> ~/.ssh/known_hosts 
   script:
-    - mkdir -p /opt/apps
+    - ssh root@$SERVER_IP "mkdir -p /opt/apps@
     - scp docker-compose.yaml root@$SERVER_IP:/opt/apps 
-    - docker compose up -d
+    - ssh root@$SERVER_IP "docker compose up -d"
